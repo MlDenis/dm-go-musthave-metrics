@@ -1,0 +1,6 @@
+POST http://localhost:8080/update/gauge/metric2/111
+Content-Type: text/plain
+
+{}
+
+###
