@@ -11,7 +11,7 @@ func main() {
 		serverPort   string
 	)
 
-	//serverAdress = "localhost"
+	serverAdress = "localhost"
 	serverPort = "8080"
 
 	s := server.MakeNewMSServer(serverAdress, serverPort)
