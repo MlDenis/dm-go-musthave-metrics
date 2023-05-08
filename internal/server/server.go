@@ -10,13 +10,24 @@ import (
 	"strings"
 )
 
-type MSServer struct {
-	MS   storage.MemStorage
+type ServerConfig struct {
 	addr string
+	prt  string
 }
 
-func MakeNewMSServer(adress string) MSServer {
-	return MSServer{MS: storage.MemStorage{}, addr: adress}
+func NewServerConfig(address string, port string) ServerConfig {
+	return ServerConfig{addr: address, prt: port}
+}
+
+type MSServer struct {
+	MS     storage.MemStorage
+	Config ServerConfig
+}
+
+func MakeNewMSServer(adress string, port string) MSServer {
+	sc := NewServerConfig(adress, port)
+	ms := storage.NewMetricsStorage()
+	return MSServer{MS: ms, Config: sc}
 }
 
 func (s *MSServer) DoTheJob() {
@@ -29,6 +40,7 @@ func (s *MSServer) DoTheJob() {
 			http.Error(w, "Incorrect request", http.StatusBadRequest)
 			return
 		}
+		// TODO: Добавить ответ в формуте ... если имя, тип, значение не заполнены
 		vt := segmentsData[2]
 		name := segmentsData[3]
 		value := segmentsData[4]
@@ -66,12 +78,12 @@ func (s *MSServer) DoTheJob() {
 			return
 		}
 		http.Error(w, "Incorrect request", http.StatusBadRequest)
-		return
 	})
+	workAdress := fmt.Sprintf("%s:%s", s.Config.addr, s.Config.prt)
 
-	err := http.ListenAndServe(s.addr, mux)
+	err := http.ListenAndServe(workAdress, mux)
 	if err != nil {
-		log.Printf(fmt.Sprint(err))
+		log.Println(fmt.Sprint(err))
 	}
-	log.Printf("#DEBUG Server listen and serve on %s", s.addr)
+	log.Printf("Server listen and serve on %s", workAdress)
 }

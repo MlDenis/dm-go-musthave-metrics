@@ -2,7 +2,6 @@ package storage
 
 import (
 	"github.com/MlDenis/dm-go-musthave-metrics/internal/metric"
-	"log"
 )
 
 type MetricData struct {
@@ -15,8 +14,8 @@ type MemStorage struct {
 	data map[string]*MetricData
 }
 
-func (ms *MemStorage) NewMetricsStorage() MemStorage {
-	return MemStorage{}
+func NewMetricsStorage() MemStorage {
+	return MemStorage{make(map[string]*MetricData)}
 }
 
 func (ms *MemStorage) UpdateMetricInStorage(
@@ -24,12 +23,21 @@ func (ms *MemStorage) UpdateMetricInStorage(
 	metricName string,
 	gaugeValue metric.Gauge,
 	counterValue metric.Counter) {
-	switch metricType {
-	case metric.GaugeString:
-		(ms.data[metricName]).gaugeValue = gaugeValue
-		log.Printf("#DEBUG: gaugeValue %s : %v has been added to the MemStorage\n", metricName, gaugeValue)
-	case metric.CounterString:
-		ms.data[metricName].counterValue = counterValue
-		log.Printf("#DEBUG: counterValue %s : %v has been added to the MemStorage\n", metricName, counterValue)
+
+	_, ok := ms.data[metricName]
+	if ok {
+		switch metricType {
+		case metric.GaugeString:
+			(ms.data[metricName]).gaugeValue = gaugeValue
+		case metric.CounterString:
+			ms.data[metricName].counterValue += counterValue
+		}
+	} else {
+		newElement := new(MetricData)
+		newElement.metricType = metricType
+		newElement.gaugeValue = gaugeValue
+		newElement.counterValue = counterValue
+
+		ms.data[metricName] = newElement
 	}
 }
