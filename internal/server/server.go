@@ -37,7 +37,7 @@ func (s *MSServer) DoTheJob() {
 
 		segmentsData := strings.Split(r.URL.Path, "/")
 		vt := segmentsData[2]
-		if vt != "gauge" || vt != "counter" {
+		if vt != "gauge" && vt != "counter" {
 			http.Error(w, "Incorrect request", http.StatusBadRequest)
 			return
 		}
