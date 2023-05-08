@@ -36,14 +36,21 @@ func (s *MSServer) DoTheJob() {
 		w.Header().Set("Content-Type", "text/plain")
 
 		segmentsData := strings.Split(r.URL.Path, "/")
-		if len(segmentsData) != 5 {
+		vt := segmentsData[2]
+		if vt != "gauge" || vt != "counter" {
 			http.Error(w, "Incorrect request", http.StatusBadRequest)
 			return
 		}
-		// TODO: Добавить ответ в формуте ... если имя, тип, значение не заполнены
-		vt := segmentsData[2]
 		name := segmentsData[3]
+		if name == "" {
+			http.Error(w, "Incorrect request", http.StatusNotFound)
+			return
+		}
 		value := segmentsData[4]
+		if value == "" {
+			http.Error(w, "Incorrect request", http.StatusBadRequest)
+			return
+		}
 
 		switch vt {
 		case metric.GaugeString:
