@@ -1,4 +1,4 @@
-POST http://localhost:8080/update/gauge/metric2/111
+POST http://localhost:8080/update/counter/testCounter/100
 Content-Type: text/plain
 
 {}

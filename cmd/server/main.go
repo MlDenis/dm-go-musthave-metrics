@@ -5,6 +5,16 @@ import (
 )
 
 func main() {
-	s := server.MakeNewMSServer("localhost:8080")
+
+	var (
+		serverAdress string
+		serverPort   string
+	)
+
+	//serverAdress = "localhost"
+	serverPort = "8080"
+
+	s := server.MakeNewMSServer(serverAdress, serverPort)
 	s.DoTheJob()
+
 }
