@@ -33,6 +33,8 @@ func MakeNewMSServer(adress string, port string) MSServer {
 func (s *MSServer) DoTheJob() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/update/", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("#DEBUG we in mux.HandleFunc(\"/update/\", func(w http.ResponseWriter, r *http.Request) ")
+
 		w.Header().Set("Content-Type", "text/plain")
 
 		segmentsData := strings.Split(r.URL.Path, "/")
@@ -86,6 +88,7 @@ func (s *MSServer) DoTheJob() {
 		}
 		http.Error(w, "Incorrect request", http.StatusBadRequest)
 	})
+
 	workAdress := fmt.Sprintf("%s:%s", s.Config.addr, s.Config.prt)
 
 	err := http.ListenAndServe(workAdress, mux)

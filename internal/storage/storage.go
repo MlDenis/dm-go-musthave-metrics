@@ -2,12 +2,13 @@ package storage
 
 import (
 	"github.com/MlDenis/dm-go-musthave-metrics/internal/metric"
+	"log"
 )
 
 type MetricData struct {
-	metricType   string
-	gaugeValue   metric.Gauge
-	counterValue metric.Counter
+	MetricType   string
+	GaugeValue   metric.Gauge
+	CounterValue metric.Counter
 }
 
 type MemStorage struct {
@@ -22,22 +23,25 @@ func (ms *MemStorage) UpdateMetricInStorage(
 	metricType string,
 	metricName string,
 	gaugeValue metric.Gauge,
-	counterValue metric.Counter) {
-
+	counterValue metric.Counter,
+) {
 	_, ok := ms.data[metricName]
 	if ok {
 		switch metricType {
 		case metric.GaugeString:
-			(ms.data[metricName]).gaugeValue = gaugeValue
+			(ms.data[metricName]).GaugeValue = gaugeValue
 		case metric.CounterString:
-			ms.data[metricName].counterValue += counterValue
+			ms.data[metricName].CounterValue += counterValue
 		}
 	} else {
-		newElement := new(MetricData)
-		newElement.metricType = metricType
-		newElement.gaugeValue = gaugeValue
-		newElement.counterValue = counterValue
+		newElement := MetricData{
+			metricType,
+			gaugeValue,
+			counterValue,
+		}
 
-		ms.data[metricName] = newElement
+		ms.data[metricName] = &newElement
 	}
+
+	log.Printf("#DEBUG UpdateMetricInStorage sucessfully complete with: %+v", ms.data[metricName])
 }

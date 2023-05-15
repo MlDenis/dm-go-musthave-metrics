@@ -1,23 +1,45 @@
-package client
+package sendler
 
 import (
 	"fmt"
+	"github.com/MlDenis/dm-go-musthave-metrics/internal/collector"
 	"io"
 	"log"
 	"net/http"
 	"time"
 )
 
+type AgentConfig struct {
+	sendingAdress  string
+	sendingPort    string
+	pollInterval   time.Duration
+	reportInterval time.Duration
+}
+
+func InitAgentConfig(
+	sendingAdress string,
+	sendingPort string,
+	pollInterval time.Duration,
+	reportInterval time.Duration,
+) AgentConfig {
+	return AgentConfig{
+		sendingAdress,
+		sendingPort,
+		pollInterval,
+		reportInterval,
+	}
+}
+
 type Agent struct {
 	config            AgentConfig
-	metricsDataBuffer MetricsDataBuffer
+	metricsDataBuffer collector.MetricsDataBuffer
 	client            *http.Client
 	pollTicker        *time.Ticker
 	reportTicker      *time.Ticker
 }
 
 func MakeNewAgent(cfg AgentConfig) *Agent {
-	mdb := MakeNewDataBuffer()
+	mdb := collector.MakeNewDataBuffer()
 	clt := &http.Client{}
 
 	return &Agent{
@@ -30,8 +52,8 @@ func MakeNewAgent(cfg AgentConfig) *Agent {
 }
 
 func (a *Agent) UpdateMetricsData() {
-	a.metricsDataBuffer.CollectMetricData()
-	//log.Printf("#DEBUG UpdateMetricsData sucessfully complete")
+	a.metricsDataBuffer.CollectMetricData(a.config.pollInterval)
+	log.Printf("#DEBUG UpdateMetricsData sucessfully complete")
 }
 
 func (a *Agent) SendMetricData(metricName string) error {
@@ -39,22 +61,22 @@ func (a *Agent) SendMetricData(metricName string) error {
 	c := &http.Client{}
 	var requestData string
 
-	switch (a.metricsDataBuffer.data[metricName]).MetricType {
+	switch (a.metricsDataBuffer.Data[metricName]).MetricType {
 	case "gauge":
 		requestData = fmt.Sprintf("%s:%s/update/%s/%s/%f",
 			a.config.sendingAdress,
 			a.config.sendingPort,
-			a.metricsDataBuffer.data[metricName].MetricType,
+			a.metricsDataBuffer.Data[metricName].MetricType,
 			metricName,
-			a.metricsDataBuffer.data[metricName].GaugeValue,
+			a.metricsDataBuffer.Data[metricName].GaugeValue,
 		)
 	case "counter":
 		requestData = fmt.Sprintf("%s:%s/update/%s/%s/%d",
 			a.config.sendingAdress,
 			a.config.sendingPort,
-			a.metricsDataBuffer.data[metricName].MetricType,
+			a.metricsDataBuffer.Data[metricName].MetricType,
 			metricName,
-			a.metricsDataBuffer.data[metricName].CounterValue,
+			a.metricsDataBuffer.Data[metricName].CounterValue,
 		)
 	}
 
@@ -81,26 +103,15 @@ func (a *Agent) SendMetricData(metricName string) error {
 }
 
 func (a *Agent) SendMetricsData() {
-	for metric, _ := range a.metricsDataBuffer.data {
-		err := a.SendMetricData(metric)
-		if err != nil {
-			return
-		}
-	}
-}
-
-func (a *Agent) DoTheJob() {
 
 	for {
-		select {
-		case <-a.pollTicker.C:
-			a.UpdateMetricsData()
-		case <-time.After(a.config.reportInterval * time.Second):
-			a.SendMetricsData()
-			//case <-a.reportTicker.C:
-			//	a.SendMetricsData()
-		}
 
+		for metric, _ := range a.metricsDataBuffer.Data {
+			err := a.SendMetricData(metric)
+			if err != nil {
+				return
+			}
+		}
 	}
 
 }

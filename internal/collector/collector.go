@@ -1,4 +1,4 @@
-package client
+package collector
 
 import (
 	"github.com/MlDenis/dm-go-musthave-metrics/internal/metric"
@@ -19,7 +19,7 @@ func MakeNewDataBuffer() MetricsDataBuffer {
 	return mdf
 }
 
-func (mdf *MetricsDataBuffer) CollectMetricData() {
+func (mdf *MetricsDataBuffer) CollectMetricData(pollInterval time.Duration) {
 	var memStats runtime.MemStats
 	runtime.ReadMemStats(&memStats)
 
@@ -71,5 +71,5 @@ func (mdf *MetricsDataBuffer) CollectMetricData() {
 		mdf.Data["PollCount"] = &storage.MetricData{"counter", -1.0, 1}
 	}
 
-	time.Sleep(*time.Second)
+	//time.Sleep(pollInterval * time.Second)
 }
