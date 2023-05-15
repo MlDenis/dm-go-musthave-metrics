@@ -5,7 +5,6 @@ import (
 	"github.com/MlDenis/dm-go-musthave-metrics/internal/storage"
 	"math/rand"
 	"runtime"
-	"time"
 )
 
 type MetricsDataBuffer struct {
@@ -19,11 +18,9 @@ func MakeNewDataBuffer() MetricsDataBuffer {
 	return mdf
 }
 
-func (mdf *MetricsDataBuffer) CollectMetricData(pollInterval time.Duration) {
+func (mdf *MetricsDataBuffer) CollectMetricData() {
 	var memStats runtime.MemStats
 	runtime.ReadMemStats(&memStats)
-
-	// TODO: Обсудить 1 на 1 как избежать ручного ввода каждого параметра, и иметь всё параметры в одной структуре уже при старте, перерабатывая инфу из массива в цикле
 
 	mdf.Data["Alloc"] = &storage.MetricData{"gauge", metric.Gauge(memStats.Alloc), -1}
 	mdf.Data["BuckHashSys"] = &storage.MetricData{"gauge", metric.Gauge(memStats.BuckHashSys), -1}
@@ -70,6 +67,4 @@ func (mdf *MetricsDataBuffer) CollectMetricData(pollInterval time.Duration) {
 	} else {
 		mdf.Data["PollCount"] = &storage.MetricData{"counter", -1.0, 1}
 	}
-
-	//time.Sleep(pollInterval * time.Second)
 }
