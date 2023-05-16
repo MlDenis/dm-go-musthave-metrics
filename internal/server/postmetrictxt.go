@@ -1,32 +1,39 @@
 package server
 
-vt := ctx.Params.ByName(metrics.TypeS)
-name := ctx.Params.ByName(metrics.NameS)
-value := ctx.Params.ByName(metrics.ValueS)
+import (
+	"github.com/MlDenis/dm-go-musthave-metrics/internal/metric"
+	"github.com/gin-gonic/gin"
+	"net/http"
+	"strconv"
+)
 
-log.Printf("#DEBUG run PostSingleValue with: value type = %s, name = %s, value = %s.\n", vt, name, value)
+func (s *MSServer) PostSingleValue(ctx *gin.Context) {
 
-if value == "none" {
-ctx.String(http.StatusBadRequest, services.CtText)
-return
-}
+	vt := ctx.Params.ByName(TypeS)
+	name := ctx.Params.ByName(NameS)
+	value := ctx.Params.ByName(ValueS)
 
-switch vt {
-case metrics.GaugeS:
-if _, err := strconv.ParseFloat(value, 64); err == nil {
-s.MetricsStorage.UpdateStorageData(vt, name, value)
-ctx.String(http.StatusOK, services.CtText)
-return
-}
-case metrics.CounterS:
-log.Printf("#DEBUG.%s.%s value before strconv.ParseInt(value, 10, 64) = %s", vt, name, value)
-if i, err := strconv.ParseInt(value, 10, 64); err == nil {
-log.Printf("#DEBUG.%s.%s value before strconv.ParseInt(value, 10, 64) = %v", vt, name, i)
-s.MetricsStorage.UpdateStorageData(vt, name, value)
-ctx.String(http.StatusOK, services.CtText)
-return
-}
-default:
-ctx.String(http.StatusNotImplemented, services.CtText)
-return
+	if value == "none" {
+		ctx.String(http.StatusBadRequest, "text/plain")
+		return
+	}
+
+	switch vt {
+	case metric.GaugeString:
+		if floatVal, err := strconv.ParseFloat(value, 64); err == nil {
+			s.MS.UpdateMetricInStorage(vt, name, metric.Gauge(floatVal), -1)
+			ctx.String(http.StatusOK, "text/plain")
+			return
+		}
+	case metric.CounterString:
+		if intVal, err := strconv.ParseInt(value, 10, 64); err == nil {
+			s.MS.UpdateMetricInStorage(vt, name, -1.0, metric.Counter(intVal))
+			ctx.String(http.StatusOK, "text/plain")
+			return
+		}
+	default:
+		ctx.String(http.StatusNotImplemented, "text/plain")
+		return
+	}
+
 }

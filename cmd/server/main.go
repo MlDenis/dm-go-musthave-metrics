@@ -15,6 +15,6 @@ func main() {
 	serverPort = "8080"
 
 	s := server.MakeNewMSServer(serverAdress, serverPort)
-	s.DoTheJob()
+	s.ServerStart()
 
 }
