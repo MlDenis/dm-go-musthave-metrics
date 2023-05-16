@@ -52,7 +52,7 @@ func MakeNewAgent(cfg AgentConfig) *Agent {
 }
 
 func (a *Agent) UpdateMetricsData() {
-	a.metricsDataBuffer.CollectMetricData(a.config.pollInterval)
+	a.metricsDataBuffer.CollectMetricData()
 	log.Printf("#DEBUG UpdateMetricsData sucessfully complete")
 }
 
