@@ -63,7 +63,7 @@ func (a *Agent) SendMetricData(metricName string) error {
 
 	switch (a.metricsDataBuffer.Data[metricName]).MetricType {
 	case "gauge":
-		requestData = fmt.Sprintf("%s:%s/update/%s/%s/%f",
+		requestData = fmt.Sprintf("http://%s:%s/update/%s/%s/%f",
 			a.config.sendingAdress,
 			a.config.sendingPort,
 			a.metricsDataBuffer.Data[metricName].MetricType,
@@ -71,7 +71,7 @@ func (a *Agent) SendMetricData(metricName string) error {
 			a.metricsDataBuffer.Data[metricName].GaugeValue,
 		)
 	case "counter":
-		requestData = fmt.Sprintf("%s:%s/update/%s/%s/%d",
+		requestData = fmt.Sprintf("http://%s:%s/update/%s/%s/%d",
 			a.config.sendingAdress,
 			a.config.sendingPort,
 			a.metricsDataBuffer.Data[metricName].MetricType,
