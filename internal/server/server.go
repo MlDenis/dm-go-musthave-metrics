@@ -14,11 +14,10 @@ const (
 
 type ServerConfig struct {
 	addr string
-	prt  string
 }
 
-func NewServerConfig(address string, port string) ServerConfig {
-	return ServerConfig{addr: address, prt: port}
+func NewServerConfig(address string) ServerConfig {
+	return ServerConfig{addr: address}
 }
 
 type MSServer struct {
@@ -27,8 +26,8 @@ type MSServer struct {
 	Router *gin.Engine
 }
 
-func MakeNewMSServer(adress string, port string) MSServer {
-	sc := NewServerConfig(adress, port)
+func MakeNewMSServer(adress string) MSServer {
+	sc := NewServerConfig(adress)
 	ms := storage.NewMetricsStorage()
 	s := MSServer{MS: ms, Config: sc}
 
@@ -45,5 +44,5 @@ func MakeNewMSServer(adress string, port string) MSServer {
 }
 
 func (s *MSServer) ServerStart() error {
-	return s.Router.Run(fmt.Sprintf("%s:%s", s.Config.addr, s.Config.prt))
+	return s.Router.Run(fmt.Sprintf("%s", s.Config.addr))
 }

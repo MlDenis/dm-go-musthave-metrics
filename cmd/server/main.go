@@ -1,20 +1,20 @@
 package main
 
 import (
+	"flag"
 	"github.com/MlDenis/dm-go-musthave-metrics/internal/server"
 )
 
+var serverAdress *string
+
+func init() {
+	serverAdress = flag.String("a", "localhost:8080", "SendingAdress")
+}
+
 func main() {
+	flag.Parse()
 
-	var (
-		serverAdress string
-		serverPort   string
-	)
-
-	serverAdress = "localhost"
-	serverPort = "8080"
-
-	s := server.MakeNewMSServer(serverAdress, serverPort)
+	s := server.MakeNewMSServer(*serverAdress)
 	s.ServerStart()
 
 }

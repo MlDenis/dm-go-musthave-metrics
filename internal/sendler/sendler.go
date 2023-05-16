@@ -11,20 +11,17 @@ import (
 
 type AgentConfig struct {
 	sendingAdress  string
-	sendingPort    string
 	pollInterval   time.Duration
 	reportInterval time.Duration
 }
 
 func InitAgentConfig(
 	sendingAdress string,
-	sendingPort string,
 	pollInterval time.Duration,
 	reportInterval time.Duration,
 ) AgentConfig {
 	return AgentConfig{
 		sendingAdress,
-		sendingPort,
 		pollInterval,
 		reportInterval,
 	}
@@ -65,15 +62,13 @@ func (a *Agent) SendMetricData(metricName string) error {
 	case "gauge":
 		requestData = fmt.Sprintf("http://%s:%s/update/%s/%s/%f",
 			a.config.sendingAdress,
-			a.config.sendingPort,
 			a.metricsDataBuffer.Data[metricName].MetricType,
 			metricName,
 			a.metricsDataBuffer.Data[metricName].GaugeValue,
 		)
 	case "counter":
-		requestData = fmt.Sprintf("http://%s:%s/update/%s/%s/%d",
+		requestData = fmt.Sprintf("http://%s/update/%s/%s/%d",
 			a.config.sendingAdress,
-			a.config.sendingPort,
 			a.metricsDataBuffer.Data[metricName].MetricType,
 			metricName,
 			a.metricsDataBuffer.Data[metricName].CounterValue,
