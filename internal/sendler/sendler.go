@@ -11,14 +11,14 @@ import (
 
 type AgentConfig struct {
 	sendingAdress  string
-	pollInterval   time.Duration
-	reportInterval time.Duration
+	pollInterval   int
+	reportInterval int
 }
 
 func InitAgentConfig(
 	sendingAdress string,
-	pollInterval time.Duration,
-	reportInterval time.Duration,
+	pollInterval int,
+	reportInterval int,
 ) AgentConfig {
 	return AgentConfig{
 		sendingAdress,
@@ -43,8 +43,8 @@ func MakeNewAgent(cfg AgentConfig) *Agent {
 		config:            cfg,
 		metricsDataBuffer: mdb,
 		client:            clt,
-		pollTicker:        time.NewTicker(cfg.pollInterval),
-		reportTicker:      time.NewTicker(cfg.reportInterval),
+		pollTicker:        time.NewTicker(time.Duration(cfg.pollInterval)),
+		reportTicker:      time.NewTicker(time.Duration(cfg.reportInterval)),
 	}
 }
 
