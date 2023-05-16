@@ -105,8 +105,7 @@ func (a *Agent) SendMetricData(metricName string) error {
 func (a *Agent) SendMetricsData() {
 
 	for {
-
-		for metric, _ := range a.metricsDataBuffer.Data {
+		for metric := range a.metricsDataBuffer.Data {
 			err := a.SendMetricData(metric)
 			if err != nil {
 				return
