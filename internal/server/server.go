@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/MlDenis/dm-go-musthave-metrics/internal/storage"
 	"github.com/gin-gonic/gin"
 )
@@ -44,5 +43,5 @@ func MakeNewMSServer(adress string) MSServer {
 }
 
 func (s *MSServer) ServerStart() error {
-	return s.Router.Run(fmt.Sprintf("%s", s.Config.addr))
+	return s.Router.Run(s.Config.addr)
 }

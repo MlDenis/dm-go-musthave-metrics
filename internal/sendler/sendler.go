@@ -60,7 +60,7 @@ func (a *Agent) SendMetricData(metricName string) error {
 
 	switch (a.metricsDataBuffer.Data[metricName]).MetricType {
 	case "gauge":
-		requestData = fmt.Sprintf("http://%s:%s/update/%s/%s/%f",
+		requestData = fmt.Sprintf("http://%s/update/%s/%s/%f",
 			a.config.sendingAdress,
 			a.metricsDataBuffer.Data[metricName].MetricType,
 			metricName,
