@@ -1,8 +1,10 @@
 package storage
 
 import (
+	"fmt"
 	"github.com/MlDenis/dm-go-musthave-metrics/internal/metric"
-	"log"
+	"github.com/gin-gonic/gin"
+	"strings"
 )
 
 type MetricData struct {
@@ -43,5 +45,44 @@ func (ms *MemStorage) UpdateMetricInStorage(
 		ms.data[metricName] = &newElement
 	}
 
-	log.Printf("#DEBUG UpdateMetricInStorage sucessfully complete with: %+v", ms.data[metricName])
+}
+
+// GetStorageInfo - A method for returning data about a specific metric in text form.
+func (ms *MemStorage) GetStorageInfo(vt string, name string) (string, error) {
+
+	switch vt {
+	case metric.GaugeString:
+		value, ok := ms.data[name]
+		if ok {
+			return fmt.Sprintf("%+v", value.GaugeValue), nil
+		}
+	case metric.CounterString:
+		value, ok := ms.data[name]
+		if ok {
+			return fmt.Sprintf("%+v", value.CounterValue), nil
+		}
+	}
+	return fmt.Sprintf("Value with key %s not found", name), gin.Error{}
+}
+
+// GetHTMLPageInfo - Method for returning data about all available metric values in the form of an html document.
+func (ms *MemStorage) GetHTMLPageInfo() string {
+	var pageInfo strings.Builder
+
+	for name, value := range ms.data {
+		switch value.MetricType {
+		case metric.GaugeString:
+			_, err := fmt.Fprintf(&pageInfo, "* %s :  %v \n", name, fmt.Sprint(value.GaugeValue))
+			if err != nil {
+				return fmt.Sprint(err)
+			}
+		case metric.CounterString:
+			_, err := fmt.Fprintf(&pageInfo, "* %s :  %v \n", name, fmt.Sprint(value.CounterValue))
+			if err != nil {
+				return fmt.Sprint(err)
+			}
+		}
+	}
+	return pageInfo.String()
+
 }

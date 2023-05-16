@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/MlDenis/dm-go-musthave-metrics/internal/metric"
 	"github.com/MlDenis/dm-go-musthave-metrics/internal/storage"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strconv"
@@ -22,12 +23,24 @@ func NewServerConfig(address string, port string) ServerConfig {
 type MSServer struct {
 	MS     storage.MemStorage
 	Config ServerConfig
+	Router *gin.Engine
 }
 
 func MakeNewMSServer(adress string, port string) MSServer {
 	sc := NewServerConfig(adress, port)
 	ms := storage.NewMetricsStorage()
-	return MSServer{MS: ms, Config: sc}
+	s := MSServer{MS: ms, Config: sc}
+
+	r := gin.Default()
+	r.RedirectTrailingSlash = false
+
+	r.POST("/update/:type/:name/:value", s.PostSingleValue)
+	r.GET("/value/:type/:name", s.GetSingleValue)
+	r.GET("/", s.GetMSDataHowHTML)
+
+	s.Router = r
+
+	return s
 }
 
 func (s *MSServer) DoTheJob() {
