@@ -2,13 +2,12 @@ package environment
 
 import (
 	"flag"
-	"time"
 )
 
 const (
 	AgentDefaultSendingAdressURL = "localhost:8080"
-	AgentDefaultPollInterval     = 2 * time.Second
-	AgentDefaultReportInterval   = 10 * time.Second
+	AgentDefaultPollInterval     = 2
+	AgentDefaultReportInterval   = 10
 
 	AgentEnvSendingAdressURL = "ADDRESS"
 	AgentEnvPollInterval     = "POLL_INTERVAL"
@@ -17,15 +16,15 @@ const (
 
 type AgentConfig struct {
 	SendingAdress   string
-	PollIntervalS   time.Duration
-	ReportIntervalS time.Duration
+	PollIntervalS   int
+	ReportIntervalS int
 }
 
 func NewAgentConfig() AgentConfig {
 
 	sendingAdressFlag := flag.String("a", AgentDefaultSendingAdressURL, "SENDING_ADRESS")
-	pollIntervalFlag := flag.Duration("p", AgentDefaultPollInterval, "POLL_INTERVAL")
-	reportIntervalFlag := flag.Duration("r", AgentDefaultReportInterval, "REPORT_INTERVAL")
+	pollIntervalFlag := flag.Int("p", AgentDefaultPollInterval, "POLL_INTERVAL")
+	reportIntervalFlag := flag.Int("r", AgentDefaultReportInterval, "REPORT_INTERVAL")
 
 	flag.Parse()
 

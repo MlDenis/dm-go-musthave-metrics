@@ -85,15 +85,15 @@ func (a *Agent) SendMetricsData() {
 
 func (a *Agent) DoTheJob() {
 	for {
-		time.Sleep(a.config.PollIntervalS)
+		time.Sleep(time.Duration(a.config.PollIntervalS) * time.Second)
 		a.UpdateMetricsData()
-		time.Sleep(a.config.PollIntervalS)
+		time.Sleep(time.Duration(a.config.PollIntervalS) * time.Second)
 		a.UpdateMetricsData()
-		time.Sleep(a.config.PollIntervalS)
+		time.Sleep(time.Duration(a.config.PollIntervalS) * time.Second)
 		a.UpdateMetricsData()
-		time.Sleep(a.config.PollIntervalS)
+		time.Sleep(time.Duration(a.config.PollIntervalS) * time.Second)
 		a.UpdateMetricsData()
-		time.Sleep(a.config.PollIntervalS)
+		time.Sleep(time.Duration(a.config.PollIntervalS) * time.Second)
 		a.UpdateMetricsData()
 		a.SendMetricsData()
 	}

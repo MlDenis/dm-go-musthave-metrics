@@ -3,7 +3,7 @@ package environment
 import (
 	"log"
 	"os"
-	"time"
+	"strconv"
 )
 
 func GetEnvString(envName, defaultValue string) string {
@@ -15,8 +15,8 @@ func GetEnvString(envName, defaultValue string) string {
 	return value
 }
 
-func GetEnvDuration(envName string, defaultValue time.Duration) time.Duration {
-	value, err := time.ParseDuration(os.Getenv(envName))
+func GetEnvDuration(envName string, defaultValue int) int {
+	value, err := strconv.Atoi(os.Getenv(envName))
 	if err != nil {
 		log.Printf("env %s is empty: %s, default: %v", envName, err.Error(), defaultValue)
 		return defaultValue
