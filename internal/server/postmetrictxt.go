@@ -21,13 +21,13 @@ func (s *MSServer) PostSingleValue(ctx *gin.Context) {
 	switch vt {
 	case metric.GaugeString:
 		if floatVal, err := strconv.ParseFloat(value, 64); err == nil {
-			s.MS.UpdateMetricInStorage(vt, name, metric.Gauge(floatVal), -1)
+			s.MS.UpdateMetricInStorage(vt, name, metric.Gauge(floatVal), 0)
 			ctx.String(http.StatusOK, "text/plain")
 			return
 		}
 	case metric.CounterString:
 		if intVal, err := strconv.ParseInt(value, 10, 64); err == nil {
-			s.MS.UpdateMetricInStorage(vt, name, -1.0, metric.Counter(intVal))
+			s.MS.UpdateMetricInStorage(vt, name, 0, metric.Counter(intVal))
 			ctx.String(http.StatusOK, "text/plain")
 			return
 		}

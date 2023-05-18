@@ -75,6 +75,8 @@ func (a *Agent) SendMetricsData() {
 		err := a.SendMetricData(metric)
 		if err != nil {
 			log.Println("Got an error while executing the command a.SendMetricData(metric): ", err)
+		} else {
+			(a.metricsDataBuffer.Data["PollCount"]).CounterValue = 0
 		}
 	}
 

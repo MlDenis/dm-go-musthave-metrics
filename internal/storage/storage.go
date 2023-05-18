@@ -33,7 +33,11 @@ func (ms *MemStorage) UpdateMetricInStorage(
 		case metric.GaugeString:
 			(ms.data[metricName]).GaugeValue = gaugeValue
 		case metric.CounterString:
-			ms.data[metricName].CounterValue += counterValue
+			if metricName == "PollCount" {
+				ms.data[metricName].CounterValue += counterValue
+			} else {
+				(ms.data[metricName]).CounterValue = counterValue
+			}
 		}
 	} else {
 		newElement := MetricData{
