@@ -64,7 +64,7 @@ func (a *Agent) SendMetricData(metricName string) error {
 
 	defer response.Body.Close()
 	if response.StatusCode != 200 {
-		return fmt.Errorf("incorrect response status code: %d. Possible error on the server side.\n", response.StatusCode)
+		return fmt.Errorf("incorrect response status code: %d. Possible error on the server side", response.StatusCode)
 	}
 
 	return nil
