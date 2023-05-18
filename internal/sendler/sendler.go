@@ -2,6 +2,7 @@ package sendler
 
 import (
 	"fmt"
+	"github.com/MlDenis/dm-go-musthave-metrics/environment"
 	"github.com/MlDenis/dm-go-musthave-metrics/internal/collector"
 	"io"
 	"log"
@@ -9,66 +10,42 @@ import (
 	"time"
 )
 
-type AgentConfig struct {
-	sendingAdress  string
-	pollInterval   int
-	reportInterval int
-}
-
-func InitAgentConfig(
-	sendingAdress string,
-	pollInterval int,
-	reportInterval int,
-) AgentConfig {
-	return AgentConfig{
-		sendingAdress,
-		pollInterval,
-		reportInterval,
-	}
-}
-
 type Agent struct {
-	config            AgentConfig
+	config            environment.AgentConfig
 	metricsDataBuffer collector.MetricsDataBuffer
 	client            *http.Client
-	pollTicker        *time.Ticker
-	reportTicker      *time.Ticker
 }
 
-func MakeNewAgent(cfg AgentConfig) *Agent {
+func MakeNewAgent(acfg environment.AgentConfig) *Agent {
 	mdb := collector.MakeNewDataBuffer()
 	clt := &http.Client{}
 
 	return &Agent{
-		config:            cfg,
+		config:            acfg,
 		metricsDataBuffer: mdb,
 		client:            clt,
-		pollTicker:        time.NewTicker(time.Duration(cfg.pollInterval)),
-		reportTicker:      time.NewTicker(time.Duration(cfg.reportInterval)),
 	}
 }
 
 func (a *Agent) UpdateMetricsData() {
 	a.metricsDataBuffer.CollectMetricData()
-	log.Printf("#DEBUG UpdateMetricsData sucessfully complete")
 }
 
 func (a *Agent) SendMetricData(metricName string) error {
-	log.Printf("#DEBUG we in SendMetricData")
 	c := &http.Client{}
 	var requestData string
 
 	switch (a.metricsDataBuffer.Data[metricName]).MetricType {
 	case "gauge":
 		requestData = fmt.Sprintf("http://%s/update/%s/%s/%f",
-			a.config.sendingAdress,
+			a.config.SendingAdress,
 			a.metricsDataBuffer.Data[metricName].MetricType,
 			metricName,
 			a.metricsDataBuffer.Data[metricName].GaugeValue,
 		)
 	case "counter":
 		requestData = fmt.Sprintf("http://%s/update/%s/%s/%d",
-			a.config.sendingAdress,
+			a.config.SendingAdress,
 			a.metricsDataBuffer.Data[metricName].MetricType,
 			metricName,
 			a.metricsDataBuffer.Data[metricName].CounterValue,
@@ -89,23 +66,35 @@ func (a *Agent) SendMetricData(metricName string) error {
 	defer response.Body.Close()
 	_, err = io.ReadAll(response.Body)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to read the request body: %w", err)
 	}
-
-	log.Printf("#DEBUG SendMetricData sucessfully complete")
 
 	return nil
 }
 
 func (a *Agent) SendMetricsData() {
-
-	for {
-		for metric := range a.metricsDataBuffer.Data {
-			err := a.SendMetricData(metric)
-			if err != nil {
-				return
-			}
+	for metric := range a.metricsDataBuffer.Data {
+		err := a.SendMetricData(metric)
+		if err != nil {
+			log.Println("Got an error while executing the command a.SendMetricData(metric): ", err)
 		}
 	}
 
+	log.Printf("Input counter value is: %v", a.metricsDataBuffer.Data["PollCount"])
+}
+
+func (a *Agent) DoTheJob() {
+	for {
+		time.Sleep(a.config.PollIntervalS)
+		a.UpdateMetricsData()
+		time.Sleep(a.config.PollIntervalS)
+		a.UpdateMetricsData()
+		time.Sleep(a.config.PollIntervalS)
+		a.UpdateMetricsData()
+		time.Sleep(a.config.PollIntervalS)
+		a.UpdateMetricsData()
+		time.Sleep(a.config.PollIntervalS)
+		a.UpdateMetricsData()
+		a.SendMetricsData()
+	}
 }
