@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/MlDenis/dm-go-musthave-metrics/environment"
 	"github.com/MlDenis/dm-go-musthave-metrics/internal/collector"
-	"io"
 	"log"
 	"net/http"
 	"time"
@@ -64,9 +63,8 @@ func (a *Agent) SendMetricData(metricName string) error {
 	}
 
 	defer response.Body.Close()
-	_, err = io.ReadAll(response.Body)
-	if err != nil {
-		return fmt.Errorf("failed to read the request body: %w", err)
+	if response.StatusCode != 200 {
+		return fmt.Errorf("incorrect response status code: %d. Possible error on the server side.\n", response.StatusCode)
 	}
 
 	return nil
