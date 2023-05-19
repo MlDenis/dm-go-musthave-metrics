@@ -2,7 +2,7 @@ package sendler
 
 import (
 	"fmt"
-	"github.com/MlDenis/dm-go-musthave-metrics/environment"
+	"github.com/MlDenis/dm-go-musthave-metrics/internal/environment"
 	"github.com/MlDenis/dm-go-musthave-metrics/internal/collector"
 	"log"
 	"net/http"
@@ -84,17 +84,16 @@ func (a *Agent) SendMetricsData() {
 }
 
 func (a *Agent) DoTheJob() {
+
+	pollTicker := time.NewTicker(time.Duration(a.config.PollIntervalS) * time.Second)
+	reportTicker := time.NewTicker(time.Duration(a.config.ReportIntervalS) * time.Second)
+
 	for {
-		time.Sleep(time.Duration(a.config.PollIntervalS) * time.Second)
-		a.UpdateMetricsData()
-		time.Sleep(time.Duration(a.config.PollIntervalS) * time.Second)
-		a.UpdateMetricsData()
-		time.Sleep(time.Duration(a.config.PollIntervalS) * time.Second)
-		a.UpdateMetricsData()
-		time.Sleep(time.Duration(a.config.PollIntervalS) * time.Second)
-		a.UpdateMetricsData()
-		time.Sleep(time.Duration(a.config.PollIntervalS) * time.Second)
-		a.UpdateMetricsData()
-		a.SendMetricsData()
+		select {
+		case <-pollTicker.C:
+			a.UpdateMetricsData()
+		case <-reportTicker.C:
+			a.SendMetricsData()
+		}
 	}
 }

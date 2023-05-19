@@ -1,16 +1,13 @@
 package server
 
 import (
-	"github.com/gin-gonic/gin"
 	"html/template"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func (s *MSServer) GetMSDataHowHTML(ctx *gin.Context) {
-
-	pageInfo := s.MS.GetHTMLPageInfo()
-
-	const tpl = `
+ tpl := `
 	<!DOCTYPE html>
 	<html>
 		<head>
@@ -23,6 +20,13 @@ func (s *MSServer) GetMSDataHowHTML(ctx *gin.Context) {
 			</div>
 		</body>
 	</html>`
+
+func (s *MSServer) GetMSDataHowHTML(ctx *gin.Context) {
+
+	pageInfo, err := s.MS.GetHTMLPageInfo()
+	if err != nil {
+		ctx.HTML(http.StatusInternalServerError, "error", err)
+	}
 
 	data := struct {
 		Title template.HTML

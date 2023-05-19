@@ -66,7 +66,7 @@ func (ms *MemStorage) GetStorageInfo(vt string, name string) (string, error) {
 }
 
 // GetHTMLPageInfo - Method for returning data about all available metric values in the form of an html document.
-func (ms *MemStorage) GetHTMLPageInfo() string {
+func (ms *MemStorage) GetHTMLPageInfo() (string, error) {
 	var pageInfo strings.Builder
 
 	for name, value := range ms.data {
@@ -74,15 +74,17 @@ func (ms *MemStorage) GetHTMLPageInfo() string {
 		case metric.GaugeString:
 			_, err := fmt.Fprintf(&pageInfo, "* %s :  %v \n", name, fmt.Sprint(value.GaugeValue))
 			if err != nil {
-				return fmt.Sprint(err)
+				return "", fmt.Errorf("failure return number of bytes with fmt.Fprintf. "+
+					"Posible error on the storage side %w", err)
 			}
 		case metric.CounterString:
 			_, err := fmt.Fprintf(&pageInfo, "* %s :  %v \n", name, fmt.Sprint(value.CounterValue))
 			if err != nil {
-				return fmt.Sprint(err)
+				return "", fmt.Errorf("failure return number of bytes with fmt.Fprintf. "+
+					"Posible error on the storage side %w", err)
 			}
 		}
 	}
-	return pageInfo.String()
+	return pageInfo.String(), nil
 
 }
