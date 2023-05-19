@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
- tpl := `
+var tpl = `
 	<!DOCTYPE html>
 	<html>
 		<head>
