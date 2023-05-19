@@ -1,7 +1,6 @@
 package server
 
 import (
-	"github.com/MlDenis/dm-go-musthave-metrics/internal/templates"
 	"github.com/gin-gonic/gin"
 	"html/template"
 	"log"
@@ -22,9 +21,9 @@ func (s *MSServer) GetMSDataHowHTML(ctx *gin.Context) {
 		Title: "<em>MS Data</em>",
 		Items: pageInfo,
 	}
-	s.Router.SetHTMLTemplate(templates.DataTemplate)
+	s.Router.SetHTMLTemplate(dataTemplate)
 
-	err = templates.DataTemplate.Execute(ctx.Writer, data)
+	err = dataTemplate.Execute(ctx.Writer, data)
 
 	if err != nil {
 		log.Println(err)

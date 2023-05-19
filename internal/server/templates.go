@@ -1,8 +1,8 @@
-package templates
+package server
 
 import "html/template"
 
-var DataTemplate = template.Must(template.New("data").Parse(`
+var dataTemplate = template.Must(template.New("data").Parse(`
 	<!DOCTYPE html>
 	<html>
 		<head>
