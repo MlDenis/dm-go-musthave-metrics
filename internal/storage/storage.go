@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/MlDenis/dm-go-musthave-metrics/internal/metric"
 	"github.com/gin-gonic/gin"
+	"strconv"
 	"strings"
 )
 
@@ -54,12 +55,12 @@ func (ms *MemStorage) GetStorageInfo(vt string, name string) (string, error) {
 	case metric.GaugeString:
 		value, ok := ms.data[name]
 		if ok {
-			return fmt.Sprintf("%+v", value.GaugeValue), nil
+			return strconv.FormatFloat(float64(value.GaugeValue), 'E', -1, 64), nil
 		}
 	case metric.CounterString:
 		value, ok := ms.data[name]
 		if ok {
-			return fmt.Sprintf("%+v", value.CounterValue), nil
+			return strconv.FormatInt(int64(value.CounterValue), 10), nil
 		}
 	}
 	return fmt.Sprintf("Value with key %s not found", name), gin.Error{}
@@ -72,13 +73,25 @@ func (ms *MemStorage) GetHTMLPageInfo() (string, error) {
 	for name, value := range ms.data {
 		switch value.MetricType {
 		case metric.GaugeString:
-			_, err := fmt.Fprintf(&pageInfo, "* %s :  %v \n", name, fmt.Sprint(value.GaugeValue))
+			_, err := fmt.Fprintf(
+				&pageInfo,
+				"* %s :  %v \n",
+				name,
+				strconv.FormatFloat(float64(value.GaugeValue),
+					'E',
+					-1,
+					64))
 			if err != nil {
 				return "", fmt.Errorf("failure return number of bytes with fmt.Fprintf. "+
 					"Posible error on the storage side %w", err)
 			}
 		case metric.CounterString:
-			_, err := fmt.Fprintf(&pageInfo, "* %s :  %v \n", name, fmt.Sprint(value.CounterValue))
+			_, err := fmt.Fprintf(
+				&pageInfo,
+				"* %s :  %v \n",
+				name,
+				strconv.FormatInt(int64(value.CounterValue),
+					10))
 			if err != nil {
 				return "", fmt.Errorf("failure return number of bytes with fmt.Fprintf. "+
 					"Posible error on the storage side %w", err)
