@@ -23,6 +23,8 @@ type MSServer struct {
 	MS     storage.MemStorage
 	Config ServerConfig
 	Router *gin.Engine
+	//tmpl   *template.Template
+	tmpl string
 }
 
 func MakeNewMSServer(adress string) MSServer {
@@ -43,5 +45,29 @@ func MakeNewMSServer(adress string) MSServer {
 }
 
 func (s *MSServer) ServerStart() error {
+	//
+	//tmpl := `
+	//<!DOCTYPE html>
+	//<html>
+	//	<head>
+	//		<meta charset="UTF-8">
+	//		<title>{{.Title}}</title>
+	//	</head>
+	//	<body>
+	//		<div>
+	//			{{.Items}}
+	//		</div>
+	//	</body>
+	//</html>`
+
+	//t, err := template.New("data").Parse(tmpl)
+	//if err != nil {
+	//	return fmt.Errorf("template parsing problem  %w", err)
+	//}
+	//s.Router.SetHTMLTemplate(t)
+	//
+	//s.tmpl = t
+	//s.tmpl = tmpl
+
 	return s.Router.Run(s.Config.addr)
 }

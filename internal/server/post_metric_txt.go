@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/MlDenis/dm-go-musthave-metrics/internal/metric"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -22,23 +23,26 @@ func (s *MSServer) PostSingleValue(ctx *gin.Context) {
 	case metric.GaugeString:
 		floatVal, err := strconv.ParseFloat(value, 64)
 		if err != nil {
+			log.Println(err)
 			ctx.String(http.StatusInternalServerError, "text/plain")
 			return
-		} else {
-			s.MS.UpdateMetricInStorage(vt, name, metric.Gauge(floatVal), 0)
-			ctx.String(http.StatusOK, "text/plain")
-			return
 		}
+
+		s.MS.UpdateMetricInStorage(vt, name, metric.Gauge(floatVal), 0)
+		ctx.String(http.StatusOK, "text/plain")
+		return
+
 	case metric.CounterString:
 		intVal, err := strconv.ParseInt(value, 10, 64)
 		if err != nil {
+			log.Println(err)
 			ctx.String(http.StatusInternalServerError, "text/plain")
 			return
-		} else {
-			s.MS.UpdateMetricInStorage(vt, name, 0, metric.Counter(intVal))
-			ctx.String(http.StatusOK, "text/plain")
-			return
 		}
+		s.MS.UpdateMetricInStorage(vt, name, 0, metric.Counter(intVal))
+		ctx.String(http.StatusOK, "text/plain")
+		return
+
 	default:
 		ctx.String(http.StatusNotImplemented, "text/plain")
 		return
