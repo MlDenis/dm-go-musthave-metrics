@@ -55,7 +55,7 @@ func (ms *MemStorage) GetStorageInfo(vt string, name string) (string, error) {
 	case metric.GaugeString:
 		value, ok := ms.data[name]
 		if ok {
-			return strconv.FormatFloat(float64(value.GaugeValue), 'E', -1, 64), nil
+			return strconv.FormatFloat(float64(value.GaugeValue), 'f', -1, 64), nil
 		}
 	case metric.CounterString:
 		value, ok := ms.data[name]
@@ -78,7 +78,7 @@ func (ms *MemStorage) GetHTMLPageInfo() (string, error) {
 				"* %s :  %v \n",
 				name,
 				strconv.FormatFloat(float64(value.GaugeValue),
-					'E',
+					'f',
 					-1,
 					64))
 			if err != nil {
