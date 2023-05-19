@@ -20,8 +20,7 @@ func TestGetSingleValue(t *testing.T) {
 		statusCode int
 		response   string
 	}{
-		// TODO: Разобраться, почему именно сецчас начал отказывать этот тест
-		//{vt: metric.GaugeString, name: "Mallocs", statusCode: http.StatusOK, response: "10.000000"},
+		{vt: metric.GaugeString, name: "Mallocs", statusCode: http.StatusOK, response: "10"},
 		{vt: metric.CounterString, name: "PollCount", statusCode: http.StatusOK, response: "5"},
 		{vt: "invalid", name: "invalid", statusCode: http.StatusNotFound, response: "text/plain"},
 	}
